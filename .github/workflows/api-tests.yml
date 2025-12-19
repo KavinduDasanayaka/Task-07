@@ -48,7 +48,7 @@ jobs:
       - name: Run API tests
        # Need backslash for linux runners and start path from above default working directory
         run: |
-          newman run task-api-collection.json -e task-env.json --reporters cli,html   
+          newman run TestAPI/task-api-collection.json -e TestAPI/task-env.json --reporters cli,html   
 
       # Step 7: Upload HTML report
       - name: Upload test report
