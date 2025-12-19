@@ -49,9 +49,9 @@ jobs:
 
       # Step 6: Run API tests
       - name: Run API tests
-       # Need backslash for linux runners
+       # Need backslash for linux runners and start path from above default working directory
         run: |
-          newman run mern-backend/TestAPI/task-api-collection.json -e mern-backend/TestAPI/task-env.json --reporters cli,html  
+          newman run TestAPI/task-api-collection.json -e TestAPI/task-env.json --reporters cli,html   
 
       # Step 7: Upload HTML report
       - name: Upload test report
