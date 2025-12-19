@@ -10,50 +10,42 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: mern-backend  # Set working directory to backend(set path where package.json is located.relative to repo root/github folder)
-
     steps:
-      # Step 1: Checkout repo
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '25.0.0'
+          node-version: '25'  # Node 25.x (Current) is stable and working well in your runs
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Start backend server
       - name: Start backend server
         env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}   #  Atlas URI
-          JWT_SECRET: ${{ secrets.JWT_SECRET }} #  JWT secret
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           PORT: 5000
         run: |
           npm start &       # Start server in background
-          sleep 10          # Wait for server to be ready
+          sleep 15          # Give extra time for server & DB connection
 
-
-      # Step 5: Install Newman
-      - name: Install Newman
-        run: npm install -g newman
-
-      # Step 6: Run API tests
-      - name: Run API tests
-       # Need backslash for linux runners and start path from above default working directory
+      - name: Install Newman and HTML reporter
         run: |
-          newman run TestAPI/task-api-collection.json -e TestAPI/task-env.json --reporters cli,html   
+          npm install -g newman
+          npm install -g newman-reporter-html
 
-      # Step 7: Upload HTML report
+      - name: Run API tests
+        run: |
+          newman run TestAPI/task-api-collection.json \
+                     -e TestAPI/task-env.json \
+                     --reporters cli,html \
+                     --reporter-html-export newman/report.html
+
       - name: Upload test report
-        if: always()   # Even if tests fail
+        if: always()  # Upload even if tests fail
         uses: actions/upload-artifact@v4
         with:
           name: newman-report
-          path: newman/*.html
+          path: newman/
