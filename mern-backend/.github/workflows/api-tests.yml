@@ -10,6 +10,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: mern-backend  # Set working directory to backend(set path where package.json is located.relative to repo root/github folder)
+
     steps:
       # Step 1: Checkout repo
       - name: Checkout code
@@ -35,14 +39,16 @@ jobs:
           npm start &       # Start server in background
           sleep 10          # Wait for server to be ready
 
+
       # Step 5: Install Newman
       - name: Install Newman
         run: npm install -g newman
 
       # Step 6: Run API tests
       - name: Run API tests
+       # Need backslash for linux runners and start path from above default working directory
         run: |
-          newman run TestAPI\task-api-collection.json -e TestAPI\task-env.json --reporters cli,html
+          newman run TestAPI/task-api-collection.json -e TestAPI/task-env.json --reporters cli,html   
 
       # Step 7: Upload HTML report
       - name: Upload test report
